@@ -5,16 +5,20 @@ from enum import Enum
 from PySide6.QtCore import QLocale
 from qfluentwidgets import (qconfig, QConfig, ConfigItem, OptionsConfigItem, BoolValidator,
                             OptionsValidator, RangeConfigItem, RangeValidator,
-                            ConfigSerializer)
+                            ConfigSerializer, Theme, EnumSerializer)
 
-from ok import get_relative_path
+from ok.util.file import get_relative_path
 
 
 class Language(Enum):
     """ Language enumeration """
 
-    CHINESE_SIMPLIFIED = QLocale(QLocale.Chinese, QLocale.China)
+    CHINESE_SIMPLIFIED = QLocale(QLocale.Chinese, QLocale.SimplifiedChineseScript)
+    CHINESE_TRADITIONAL = QLocale(QLocale.Chinese, QLocale.TraditionalChineseScript)
     ENGLISH = QLocale(QLocale.English)
+    SPANISH = QLocale(QLocale.Spanish)
+    JAPANESE = QLocale(QLocale.Japanese)
+    KOREAN = QLocale(QLocale.Korean)
     AUTO = QLocale()
 
 
@@ -47,8 +51,8 @@ class AppConfig(QConfig):
 
     # software update
     checkUpdateAtStartUp = ConfigItem("Update", "CheckUpdateAtStartUp", True, BoolValidator())
-    # themeMode = OptionsConfigItem(
-    #     "QFluentWidgets", "ThemeMode", Theme.DARK, OptionsValidator(Theme), EnumSerializer(Theme))
+    themeMode = OptionsConfigItem(
+        "QFluentWidgets", "ThemeMode", Theme.DARK, OptionsValidator(Theme), EnumSerializer(Theme))
 
 
 cfg = AppConfig()

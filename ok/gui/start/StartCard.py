@@ -1,11 +1,13 @@
+import os
+import subprocess
+import zipfile
 from ctypes import windll, wintypes
+from pathlib import Path
 
 from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import QHBoxLayout, QWidget
 from _ctypes import byref
 from qfluentwidgets import FluentIcon, SettingCard, PushButton
-import zipfile
-import subprocess
-from pathlib import Path
 
 from ok import Handler
 from ok import Logger
@@ -19,30 +21,32 @@ logger = Logger.get_logger(__name__)
 
 class StartCard(SettingCard):
     show_choose_hwnd = Signal()
+    hotkey_changed = Signal()
 
     def __init__(self, exit_event):
-        super().__init__(FluentIcon.PLAY, f'{self.tr("Start")} {og.app.title}', og.app.title)
+        super().__init__(og.config.get('gui_icon'), og.app.title, og.app.version)
+        self.basic_options = og.executor.basic_options
+
+        self.iconLabel.setFixedSize(30, 30)
         self.hBoxLayout.setAlignment(Qt.AlignVCenter)
         self.status_bar = StatusBar("test")
         self.status_bar.clicked.connect(self.status_clicked)
+        self.hBoxLayout.addWidget(self.status_bar, 0, Qt.AlignLeft)
+        self.hBoxLayout.addSpacing(6)
 
-        self.hBoxLayout.addWidget(self.status_bar, 0, Qt.AlignRight)
-        self.hBoxLayout.addSpacing(16)
-
-        self.export_log_button = PushButton(FluentIcon.FEEDBACK, self.tr("Export Logs"), self)
-        self.hBoxLayout.addWidget(self.export_log_button, 0, Qt.AlignRight)
-        self.export_log_button.clicked.connect(self.export_logs)
-        self.hBoxLayout.addSpacing(16)
-
-        self.capture_button = PushButton(FluentIcon.ZOOM, self.tr("Test Capture"), self)
+        self.capture_button = PushButton(FluentIcon.ZOOM, self.tr("Capture"), self)
         self.hBoxLayout.addWidget(self.capture_button, 0, Qt.AlignRight)
-        self.capture_button.clicked.connect(self.capture)
+        self.hBoxLayout.addSpacing(6)
 
-        self.hBoxLayout.addSpacing(16)
+        self.refresh_button = PushButton(FluentIcon.SYNC, self.tr("Refresh"), self)
+        self.hBoxLayout.addWidget(self.refresh_button, 0, Qt.AlignRight)
+        self.hBoxLayout.addSpacing(6)
 
         self.start_button = PushButton(FluentIcon.PLAY, self.tr("Start"), self)
         self.hBoxLayout.addWidget(self.start_button, 0, Qt.AlignRight)
-        self.hBoxLayout.addSpacing(16)
+        self.hBoxLayout.addSpacing(20)
+
+        self.hotkey_changed.connect(self.update_status)
         self.update_status()
         self.start_button.clicked.connect(self.clicked)
         communicate.executor_paused.connect(self.update_status)
@@ -50,12 +54,9 @@ class StartCard(SettingCard):
         communicate.task.connect(self.update_task)
 
         self.handler = Handler(exit_event, "StartCard")
-        self.handler.post(self.bind_hot_keys)
+        self.current_hotkey = "UNINIT"
         self.handler.post(self.check_hotkey, 0.1)
-
-    @staticmethod
-    def capture():
-        return capture(processor=og.config.get('screenshot_processor'))
+        logger.debug('basic_options.start/stop: {}'.format(self.basic_options.get('Start/Stop')))
 
     def status_clicked(self):
         if not og.executor.paused:
@@ -67,51 +68,30 @@ class StartCard(SettingCard):
                 communicate.tab.emit("start")
             self.status_bar.show()
 
-    def clicked(self):
+    @staticmethod
+    def clicked():
         if not og.executor.paused:
             og.executor.pause()
         else:
             og.app.start_controller.start()
 
-    @staticmethod
-    def export_logs():
-        """
-            Creates a zip file named "app-log.zip" in the user's Downloads folder.
-
-            The zip file will contain the 'screenshots' and 'logs' folders from the
-            current working directory. If the zip file already exists, it will be
-            overwritten. After creation, Windows Explorer is opened to show the file.
-            """
-        app_name = og.config.get('gui_title')
-        downloads_path = Path.home() / "Downloads"
-        zip_path = downloads_path / f"{app_name}-log.zip"
-        folders_to_archive = ["screenshots", "logs"]
-
-        with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
-            for folder in folders_to_archive:
-                source_dir = Path.cwd() / folder
-                if not source_dir.is_dir():
-                    continue
-                for file_path in source_dir.rglob("*"):
-                    if file_path.is_file():
-                        zipf.write(file_path, file_path.relative_to(Path.cwd()))
-
-        subprocess.run(["explorer", f"/select,{zip_path}"])
-
     def update_task(self, task):
         self.update_status()
 
     def update_status(self):
+        hotkey = self.basic_options.get('Start/Stop')
+        suffix = f'({hotkey})' if hotkey and hotkey != 'None' else ''
+
         if og.executor.paused:
             device = og.device_manager.get_preferred_device()
             if device and not device['connected'] and device.get('full_path'):
-                self.start_button.setText(self.tr("Start Game") + '(F9)')
+                self.start_button.setText(self.tr("Start Game") + suffix)
             else:
-                self.start_button.setText(self.tr("Start") + '(F9)')
+                self.start_button.setText(self.tr("Start") + suffix)
             self.start_button.setIcon(FluentIcon.PLAY)
             self.status_bar.hide()
         else:
-            self.start_button.setText(self.tr("Pause") + '(F9)')
+            self.start_button.setText(self.tr("Pause") + suffix)
             self.start_button.setIcon(FluentIcon.PAUSE)
             if not og.executor.connected():
                 self.status_bar.setTitle(self.tr("Game Window Disconnected"))
@@ -140,22 +120,27 @@ class StartCard(SettingCard):
             self.status_bar.show()
 
     def check_hotkey(self):
-        # Example event type, you should use the appropriate QEvent.Type for your case
-        msg = wintypes.MSG()
+        new_hotkey = self.basic_options.get('Start/Stop')
+        if new_hotkey != self.current_hotkey:
+            self.rebind_hotkey(new_hotkey)
+            self.current_hotkey = new_hotkey
+            self.hotkey_changed.emit()
 
-        # PeekMessageW is used to check for a hotkey press
+        msg = wintypes.MSG()
         if windll.user32.PeekMessageW(byref(msg), None, 0, 0, 1):
             if msg.message == 0x0312:  # WM_HOTKEY
                 logger.debug(f'hotkey pressed {msg}')
                 if msg.wParam == 999:
                     self.clicked()
 
-        # Repost the check_hotkey method to be called after 100 ms
         self.handler.post(self.check_hotkey, 0.1)
 
-    def bind_hot_keys(self):
-        VK_F9 = 0x78
+    def rebind_hotkey(self, hotkey):
+        windll.user32.UnregisterHotKey(None, 999)
+        vk_map = {'F9': 0x78, 'F10': 0x79, 'F11': 0x7A, 'F12': 0x7B}
 
-        if not windll.user32.RegisterHotKey(None, 999, 0, VK_F9):
-            logger.error("start card Failed to register hotkey for VK_F9")
-        logger.debug('start card bind_hot_keys')
+        if hotkey and hotkey != 'None' and hotkey in vk_map:
+            if not windll.user32.RegisterHotKey(None, 999, 0, vk_map[hotkey]):
+                logger.error(f"Failed to register hotkey {hotkey}")
+        else:
+            logger.debug(f"Hotkey disabled or invalid: {hotkey}")

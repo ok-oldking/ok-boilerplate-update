@@ -4,8 +4,10 @@
 #
 #    pip-compile requirements.in
 #
+
+pynput==1.8.1
     # via -r requirements.in
-onnxocr-ppocrv4==0.0.5
+onnxocr-ppocrv5==0.0.14
     # via -r requirements.in
 pyappify==1.0.2
 certifi==2025.7.14
@@ -66,3 +68,5 @@ shiboken6==6.9.1
 typing-extensions==4.14.1
 urllib3==2.5.0
     # via requests
+adbutils==2.12.0
+#如果支持模拟器则添加这个

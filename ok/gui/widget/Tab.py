@@ -1,3 +1,4 @@
+# Tab.py
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QVBoxLayout, QWidget, QSizePolicy
 from qfluentwidgets import ScrollArea
@@ -26,7 +27,7 @@ class Tab(ScrollArea):
 
         self.view.setObjectName('view')
 
-        self.setObjectName(self.__class__.__name__)
+        self.setObjectName(f"{self.__class__.__name__}_{id(self)}")
         StyleSheet.TAB.apply(self)
 
     @property
