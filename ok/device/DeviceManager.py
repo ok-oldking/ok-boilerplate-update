@@ -213,7 +213,10 @@ class DeviceManager:
                                                                        'hwnd_class'),
                                                                    selected_hwnd=self.config.get('selected_hwnd'),
                                                                    top_hwnd_class=self.windows_capture_config.get('top_hwnd_class'))
-            nick = name or self.windows_capture_config.get('exe')
+            exe_list = self.windows_capture_config.get('exe') or self.config.get('selected_exe')
+            if isinstance(exe_list, str):
+                exe_list = [exe_list]
+            nick = name or (exe_list[0] if exe_list else "PC")
             imei = f"pc_{hwnd}" if hwnd else "pc"
             pc_device = {"address": "", "imei": imei, "device": "windows",
                          "model": "", "nick": nick, "width": width,
@@ -222,9 +225,9 @@ class DeviceManager:
                          "connected": hwnd > 0,
                          "full_path": full_path or self.config.get('pc_full_path'),
                          "real_hwnd": hwnd,
-                         "exe": self.windows_capture_config.get('exe')
+                         "exe": exe_list
                          }
-            logger.info(f'start update_pc_device {self.windows_capture_config}, pc_device: {pc_device}')
+            logger.info(f'update_pc_device pc_device: {pc_device}')
             if full_path and full_path != self.config.get('pc_full_path'):
                 logger.info(f'start update_pc_device pc_full_path {full_path}')
                 self.config['pc_full_path'] = full_path
@@ -295,13 +298,22 @@ class DeviceManager:
             return None
 
         devices = list(self.adb.iter_device())
-        with ThreadPoolExecutor(max_workers=min(len(devices), 8) if devices else 1) as executor:
-            results = list(executor.map(refresh_one, devices))
+        if self.exit_event.is_set():
+            return
+            
+        try:
+            with ThreadPoolExecutor(max_workers=min(len(devices), 8) if devices else 1) as executor:
+                results = list(executor.map(refresh_one, devices))
 
-        for result in results:
-            if result:
-                imei, device = result
-                self.device_dict[imei] = device
+            for result in results:
+                if result:
+                    imei, device = result
+                    self.device_dict[imei] = device
+        except RuntimeError as e:
+            if 'shutdown' in str(e):
+                logger.debug(f'ThreadPoolExecutor failed during shutdown: {e}')
+            else:
+                raise
         logger.debug(f'refresh_phones done')
 
     def refresh_emulators(self, current=False):
@@ -336,15 +348,23 @@ class DeviceManager:
                 emulator_device["adb_imei"] = self.adb_get_imei(adb_device)
             return emulator.name, emulator_device
 
-        with ThreadPoolExecutor(max_workers=min(len(installed_emulators), 8) if installed_emulators else 1) as executor:
-            results = list(executor.map(refresh_one, installed_emulators))
+        if self.exit_event.is_set():
+            return
+            
+        try:
+            with ThreadPoolExecutor(max_workers=min(len(installed_emulators), 8) if installed_emulators else 1) as executor:
+                results = list(executor.map(refresh_one, installed_emulators))
 
-        for result in results:
-            if result:
-                name, device = result
-                self.device_dict[name] = device
+            for result in results:
+                if result:
+                    name, device = result
+                    self.device_dict[name] = device
+        except RuntimeError as e:
+            if 'shutdown' in str(e):
+                logger.debug(f'ThreadPoolExecutor failed during shutdown: {e}')
+            else:
+                raise
         logger.info(f'refresh emulators {self.device_dict}')
-
     def get_resolution(self, device=None):
         if device is None:
             device = self.device

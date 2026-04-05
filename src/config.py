@@ -3,7 +3,7 @@ import os
 import numpy as np
 from ok import ConfigOption
 
-version = "v1.0.2"
+version = "v1.0.4"
 #不需要修改version, Github Action打包会自动修改
 
 key_config_option = ConfigOption('Game Hotkey Config', { #全局配置示例
@@ -68,8 +68,8 @@ config = {
         #'exe': ['StarRail.exe'],
         # optional, if set, will search the exe only
         # 'hwnd_class': 'UnrealWindow', #增加重名检查准确度
-        'interaction': ['PostMessage','Pynput', 'Genshin', 'PyDirect','ForegroundPostMessage'], # Genshin:某些操作可以后台, 部分游戏支持 PostMessage:可后台点击, 极少游戏支持 ForegroundPostMessage:前台使用PostMessage Pynput/PyDirect:仅支持前台使用
-        'capture_method': ['WGC', 'BitBlt_RenderFull'],  # Windows版本支持的话, 优先使用WGC, 否则使用BitBlt_Full. 支持的capture有 BitBlt, WGC, BitBlt_RenderFull, DXGI
+        'interaction': ['Pynput', 'PostMessage', 'Genshin', 'PyDirect','ForegroundPostMessage'], # Genshin:某些操作可以后台, 部分游戏支持 PostMessage:可后台点击, 极少游戏支持 ForegroundPostMessage:前台使用PostMessage Pynput/PyDirect:仅支持前台使用
+        'capture_method': ['WGC', 'BitBlt_RenderFull', 'BitBlt'],  # Windows版本支持的话, 优先使用WGC, 否则使用BitBlt_Full. 支持的capture有 BitBlt, WGC, BitBlt_RenderFull, DXGI
         'check_hdr': False, #当用户开启AutoHDR时候提示用户, 但不禁止使用
         'force_no_hdr': False, #True=当用户开启AutoHDR时候禁止使用
         'require_bg': True # 要求使用后台截图
@@ -94,15 +94,16 @@ config = {
             'default': {
                 'github': 'https://github.com/ok-oldking/ok-py',
                 'discord': 'https://discord.gg/vVyCatEBgA',
-                'sponsor': 'https://www.paypal.com/ncp/payment/JWQBH7JZKNGCQ',
                 'share': 'Download from https://github.com/ok-oldking/ok-py',
+                'qq_group':'https://qm.qq.com/q/3Gq4VLvQe',
+                'qq_channel': 'https://pd.qq.com/s/djmm6l44y',
                 'faq': 'https://github.com/ok-oldking/ok-py'
             }
         },
     'screenshots_folder': "screenshots", #截图存放目录, 每次重新启动会清空目录
     'gui_title': 'ok-py',  #窗口名
     'template_matching': { # 可选, 如使用OpenCV的模板匹配
-        'coco_feature_json': os.path.join('assets', 'result.json'), #coco格式标记, 需要png图片, 在debug模式运行后, 会对进行切图仅保留被标记部分以减少图片大小
+        'coco_feature_json': os.path.join('assets', 'coco_annotations.json'), #coco格式标记, 需要png图片, 在debug模式运行后, 会对进行切图仅保留被标记部分以减少图片大小
         'default_horizontal_variance': 0.002, #默认x偏移, 查找不传box的时候, 会根据coco坐标, match偏移box内的
         'default_vertical_variance': 0.002, #默认y偏移
         'default_threshold': 0.8, #默认threshold
@@ -112,11 +113,5 @@ config = {
     'onetime_tasks': [  # 用户点击触发的任务
         ["src.tasks.MyOneTimeTask", "MyOneTimeTask"],
         ["ok", "DiagnosisTask"],
-    ],
-    'trigger_tasks':[ # 不断执行的触发式任务
-        ["src.tasks.MyTriggerTask", "MyTriggerTask"],
-    ],
-    'custom_tabs': [
-        ['src.ui.MyTab', 'MyTab'], #可选, 自定义UI, 显示在侧边栏
     ],
 }

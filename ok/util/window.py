@@ -51,31 +51,36 @@ def is_window_minimized(hWnd):
 
 def get_exe_by_hwnd(hwnd):
     try:
-        _, pid = win32process.GetWindowThreadProcessId(hwnd)
-        if pid > 0:
-            process = psutil.Process(pid)
-
-            try:
-                name = process.name()
-            except psutil.AccessDenied as e:
-                name = ""
-                logger.error("get_exe_by_hwnd process.name() AccessDenied", e)
-
-            try:
-                exe = process.exe()
-            except psutil.AccessDenied as e:
-                exe = ""
-                logger.error("get_exe_by_hwnd process.exe() AccessDenied", e)
-
-            try:
-                cmdline = process.cmdline()
-            except psutil.AccessDenied as e:
-                cmdline = ""
-                logger.error("get_exe_by_hwnd process.cmdline() AccessDenied", e)
-
-            return name, exe, cmdline
-        else:
+        if not win32gui.IsWindow(hwnd):
             return "", "", ""
+        _, pid = win32process.GetWindowThreadProcessId(hwnd)
+        if pid <= 0:
+            return "", "", ""
+
+        try:
+            process = psutil.Process(pid)
+        except psutil.NoSuchProcess:
+            return "", "", ""
+
+        try:
+            name = process.name()
+        except (psutil.AccessDenied, psutil.NoSuchProcess) as e:
+            name = ""
+            logger.error("get_exe_by_hwnd process.name() error", e)
+
+        try:
+            exe = process.exe()
+        except (psutil.AccessDenied, psutil.NoSuchProcess) as e:
+            exe = ""
+            logger.error("get_exe_by_hwnd process.exe() error", e)
+
+        try:
+            cmdline = process.cmdline()
+        except (psutil.AccessDenied, psutil.NoSuchProcess) as e:
+            cmdline = ""
+            logger.error("get_exe_by_hwnd process.cmdline() error", e)
+
+        return name, exe, cmdline
     except Exception as e:
         logger.error('get_exe_by_hwnd error', e)
         return "", "", ""
@@ -256,6 +261,8 @@ def find_hwnd(title, exe_names, frame_width, frame_height, player_id=-1, class_n
               selected_hwnd=0, top_hwnd_class=None, last_hwnd=0):
     if exe_names is None and title is None:
         return None, 0, None, 0, 0, 0, 0, []
+    if isinstance(exe_names, str):
+        exe_names = [exe_names]
     frame_aspect_ratio = frame_width / frame_height if frame_height != 0 else 0
 
     top_results = []
@@ -280,7 +287,7 @@ def find_hwnd(title, exe_names, frame_width, frame_height, player_id=-1, class_n
             tx, ty, _, _, tcw, tch, m_ts = get_window_bounds(hwnd)
             top_results.append((hwnd, full_path, tcw, tch, tx, ty, text, cname, m_ts, t_idx))
 
-        if not is_main_class or (0 < selected_hwnd != hwnd):
+        if not is_main_class:
             return True
 
         if title:
@@ -314,10 +321,13 @@ def find_hwnd(title, exe_names, frame_width, frame_height, player_id=-1, class_n
         return None, 0, None, 0, 0, 0, 0, []
 
     w_biggest = max(results, key=lambda r: r[2] * r[3])
+    w_selected = next((r for r in results if 0 < selected_hwnd == r[0]), None)
     w_last = next((r for r in results if 0 < last_hwnd == r[0]), None)
 
     biggest = w_biggest
-    if w_last and w_biggest:
+    if w_selected:
+        biggest = w_selected
+    elif w_last and w_biggest:
         if (w_biggest[2] * w_biggest[3]) <= (w_last[2] * w_last[3]) * 1.1:
             biggest = w_last
 
@@ -378,6 +388,8 @@ def find_all_visible_windows():
             process = psutil.Process(pid)
             exe_name = process.name()
             exe_full_path = process.exe()
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            return True
         except Exception:
             exe_name = ""
             exe_full_path = ""
