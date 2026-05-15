@@ -473,11 +473,15 @@ class AnnotationCanvas(QWidget):
             pen = QPen(QColor(0, 200, 0), 2, Qt.DashLine)
             painter.setPen(pen)
             painter.setBrush(QBrush(QColor(0, 200, 0, 30)))
-            # draw_start is widget coords, draw_preview is widget coords
-            x1, y1 = int(self.draw_start.x()), int(self.draw_start.y())
-            x2, y2 = int(self.draw_preview.x()), int(self.draw_preview.y())
-            rect = QRect(QPoint(min(x1, x2), min(y1, y2)),
-                         QPoint(max(x1, x2), max(y1, y2)))
+            # Convert widget coords to image coords and back, matching _finish_drawing logic
+            ix1, iy1 = self._widget_to_img(self.draw_start.x(), self.draw_start.y())
+            ix2, iy2 = self._widget_to_img(self.draw_preview.x(), self.draw_preview.y())
+            px = int(min(ix1, ix2))
+            py = int(min(iy1, iy2))
+            pw = int(abs(ix2 - ix1))
+            ph = int(abs(iy2 - iy1))
+            wx, wy = self._img_to_widget(px, py)
+            rect = QRect(int(wx), int(wy), int(pw * self.scale), int(ph * self.scale))
             painter.drawRect(rect)
 
         painter.end()
@@ -829,16 +833,21 @@ class AnnotationCanvas(QWidget):
             return
         ix, iy = self._widget_to_img(pos.x(), pos.y())
         ix, iy = int(ix), int(iy)
+        
+        rel_x = ix / self._image.width() if self._image.width() else 0
+        rel_y = iy / self._image.height() if self._image.height() else 0
+        pos_text = f"Abs: ({ix}, {iy}) Rel: ({rel_x:.3f}, {rel_y:.3f})"
+
         if 0 <= ix < self._image.width() and 0 <= iy < self._image.height():
             color = self._image.pixelColor(ix, iy)
-            text = f"R:{color.red()} G:{color.green()} B:{color.blue()}"
+            text = f"R:{color.red():<3} G:{color.green():<3} B:{color.blue():<3} {pos_text}"
             self._current_color_text = f"({color.red()},{color.green()},{color.blue()})"
             if self.markup_window:
                 self.markup_window.update_color_label(text, color)
         else:
             self._current_color_text = ""
             if self.markup_window:
-                self.markup_window.update_color_label("")
+                self.markup_window.update_color_label(pos_text)
 
     def wheelEvent(self, event: QWheelEvent):
         """Zoom in/out with mouse wheel, anchored at mouse position."""
@@ -982,9 +991,8 @@ class MarkUpWindow(BaseWindow):
         toolbar.addStretch(1)
 
         self.image_name_label = BodyLabel("")
+        self.image_name_label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
         toolbar.addWidget(self.image_name_label)
-
-        toolbar.addStretch(1)
 
         main_layout.addLayout(toolbar)
 
@@ -1039,7 +1047,10 @@ class MarkUpWindow(BaseWindow):
         self.canvas.set_image(image_path)
 
         filename = os.path.basename(image_path)
-        self.image_name_label.setText(filename)
+        resolution_str = ""
+        if self.canvas.pixmap and not self.canvas.pixmap.isNull():
+            resolution_str = f"({self.canvas.pixmap.width()}x{self.canvas.pixmap.height()})"
+        self.image_name_label.setText(f"{filename}{resolution_str}")
 
         # Load annotations for this image
         self.coco_data = load_coco()
@@ -1100,7 +1111,7 @@ class MarkUpWindow(BaseWindow):
                 f"border: 1px solid gray; border-radius: 2px;"
             )
         else:
-            self.color_label.setText("")
+            self.color_label.setText(text)
             self.color_swatch.setStyleSheet(
                 "background-color: transparent; border: 1px solid gray; border-radius: 2px;"
             )

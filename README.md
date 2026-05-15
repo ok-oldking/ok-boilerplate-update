@@ -1,5 +1,17 @@
-## ok-script boilerplate
-ok-script模板项目, 用于fork后快速开始你的项目
+## ok-py
+Python的按键精灵，基于ok-script开发，可用于快速开发并运行各种自动化脚本和项目。
+
+### 功能演示
+
+**API列表, 脚本录制**
+![image_scripting](docs/images/image_scripting.png)
+
+**支持多种截图以及交互方式**
+![image_screenshot](docs/images/image_capture.png)
+
+**标注管理 (Template Matching)**
+![image_template](docs/images/image_template.png)
+![image_markup](docs/images/image_markup.png)
 
 ## ok-script文档和示例代码
 
@@ -7,11 +19,12 @@ ok-script模板项目, 用于fork后快速开始你的项目
 * [快速开始](https://github.com/ok-oldking/ok-script/blob/master/docs/quick_start/README.md)
 * [进阶使用](https://github.com/ok-oldking/ok-script/blob/master/docs/after_quick_start/README.md)
 * [API文档](https://github.com/ok-oldking/ok-script/blob/master/docs/api_doc/README.md)
+* 用户群: 1097603920
 * 开发者群: 938132715
 
 #### 文件说明
 ```
-src/tasks/ 任务类
+src/tasks 任务类
 src/config.py 项目配置
 tests 自动化测试用例
 deploy.txt 同步到更新库的文件列表, 如tests文件夹
@@ -27,7 +40,7 @@ assets cv2使用的template, 需要使用coco格式
 
 <div align="center">
   <h1 align="center">
-    <img src="icon.png" width="200" alt="ok-ww logo"/>
+    <img src="icons/icon.png" width="200" alt="ok-ww logo"/>
     <br/>
     ok-ww
   </h1> 
@@ -126,21 +139,9 @@ python main.py
 python main_debug.py
 ```
 
-### 命令行参数
-
-您可以通过命令行参数实现自动化启动。
-
-```bash
-# 示例：启动后自动执行第一个任务（一条龙），并在任务完成后退出程序
-ok-ww.exe -t 1 -e
-```
-
-*   `-t` 或 `--task`: 启动后自动执行第 N 个任务。`1` 代表任务列表中的第一个。
-*   `-e` 或 `--exit`: 任务执行完毕后自动退出程序。
-
 ## 💬 加入我们
 
-*   **QQ 交流群**: `462079653` (入群答案: `老王同学OK`)
+*   **QQ 交流群**: `1097603920` (入群答案: `老王同学OK`)
 *   **QQ 频道**: [点击加入](https://pd.qq.com/s/djmm6l44y) (群满或获取最新资讯)
 *   **开发者群**: `926858895` ( **注意**: 此群仅面向有开发能力、希望参与贡献的开发者，入群前请确保您已能够从源码成功运行项目。)
 

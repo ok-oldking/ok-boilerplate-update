@@ -27,7 +27,7 @@ class Recorder:
                 self.is_active = visible
                 if visible:
                     from ok.gui.util.Alert import alert_info
-                    alert_info(f"Target window active: Recording resumed", tray=True)
+                    alert_info("Target window active: Recording resumed", tray=True)
                     if not self.target_hwnd and getattr(og.device_manager, 'hwnd_window', None):
                         self.target_hwnd = og.device_manager.hwnd_window.hwnd
                     if self.inactive_start_time > 0:
@@ -35,7 +35,8 @@ class Recorder:
                         self.inactive_start_time = 0
                 else:
                     from ok.gui.util.Alert import alert_info
-                    alert_info(f"Target window inactive: Recording paused", tray=True)
+                    alert_info("Target window inactive: Recording paused", tray=True)
+                    self.drop_pending_inputs()
                     self.inactive_start_time = time.time()
 
     def start(self, target_title):
@@ -65,6 +66,7 @@ class Recorder:
 
     def stop(self):
         self.is_recording = False
+        self.drop_pending_inputs()
         if self.mouse_listener:
             self.mouse_listener.stop()
         if self.keyboard_listener:
@@ -81,15 +83,52 @@ class Recorder:
         try:
             if getattr(og.device_manager, 'hwnd_window', None) and og.device_manager.hwnd_window.hwnd == self.target_hwnd:
                 hw = og.device_manager.hwnd_window
-                return x - (hw.x + hw.real_x_offset), y - (hw.y + hw.real_y_offset)
-            if not self.target_hwnd:
-                return x, y
-            # Fallback using win32gui for non-HwndWindow cases
-            # ClientToScreen with (0,0) gives the top-left of the content area in screen coordinates
-            client_pos = win32gui.ClientToScreen(self.target_hwnd, (0, 0))
-            return x - client_pos[0], y - client_pos[1]
+                rel_x = x - (hw.x + hw.real_x_offset)
+                rel_y = y - (hw.y + hw.real_y_offset)
+                width = hw.real_width or hw.width
+                height = hw.real_height or hw.height
+                return self.normalize_coords(rel_x, rel_y, width, height)
+            if self.target_hwnd:
+                # ClientToScreen with (0,0) gives the top-left of the content area in screen coordinates
+                client_pos = win32gui.ClientToScreen(self.target_hwnd, (0, 0))
+                left, top, right, bottom = win32gui.GetClientRect(self.target_hwnd)
+                width = right - left
+                height = bottom - top
+                return self.normalize_coords(x - client_pos[0], y - client_pos[1], width, height)
+
+            return self.normalize_coords(x, y, getattr(og.device_manager, 'width', 0),
+                                         getattr(og.device_manager, 'height', 0))
         except:
-            return x, y
+            try:
+                return self.normalize_coords(x, y, getattr(og.device_manager, 'width', 0),
+                                             getattr(og.device_manager, 'height', 0))
+            except:
+                return x, y
+
+    def normalize_coords(self, x, y, width, height):
+        if width > 0 and height > 0:
+            return max(0, min(1, x / width)), max(0, min(1, y / height))
+        return x, y
+
+    def format_coord(self, value):
+        return f"{value:.4f}".rstrip('0').rstrip('.')
+
+    def drop_pending_inputs(self):
+        self.events = [
+            e for index, e in enumerate(self.events)
+            if e['type'] != 'mouse_down' and
+               (e['type'] != 'key_down' or self.has_key_up_after(index, e['key']))
+        ]
+
+    def has_key_up_after(self, index, key):
+        return any(e['type'] == 'key_up' and e['key'] == key for e in self.events[index + 1:])
+
+    def find_pending_key_down_index(self, key):
+        for i in range(len(self.events) - 1, -1, -1):
+            e = self.events[i]
+            if e['type'] == 'key_down' and e['key'] == key and not self.has_key_up_after(i, key):
+                return i
+        return None
 
     def on_click(self, x, y, button, pressed):
         if not self.is_recording or not self.is_active:
@@ -126,10 +165,11 @@ class Recorder:
         latency = current_time - self.last_event_time
         
         # Avoid recording repeating keys if already pressed
-        if any(e['type'] == 'key_down' and e['key'] == self._key_to_str(key) for e in self.events):
+        key_str = self._key_to_str(key)
+        if self.find_pending_key_down_index(key_str) is not None:
             return
             
-        self.events.append({'type': 'key_down', 'key': self._key_to_str(key), 'time': current_time, 'latency': latency})
+        self.events.append({'type': 'key_down', 'key': key_str, 'time': current_time, 'latency': latency})
         self.last_event_time = current_time
 
     def on_release(self, key):
@@ -139,12 +179,15 @@ class Recorder:
         current_time = time.time()
         key_str = self._key_to_str(key)
         
-        for i in range(len(self.events) - 1, -1, -1):
+        i = self.find_pending_key_down_index(key_str)
+        if i is not None:
             e = self.events[i]
-            if e['type'] == 'key_down' and e['key'] == key_str:
+            e['down_time'] = current_time - e['time']
+            if i == len(self.events) - 1:
                 e['type'] = 'key_press'
-                e['down_time'] = current_time - e['time']
-                break
+            else:
+                self.events.append({'type': 'key_up', 'key': key_str, 'time': current_time,
+                                    'latency': current_time - self.last_event_time})
         self.last_event_time = current_time
 
     def _key_to_str(self, key):
@@ -235,34 +278,52 @@ class Recorder:
             init_lines.append("}")
             init_lines.append("")
 
-        for e in self.events:
-            if 'latency' in e and e['latency'] > 0.1:
-                lines.append(f"self.sleep({e['latency']:.2f}) # wait for {e['latency']:.2f}s")
-                
+        action_events = [e for e in self.events if e['type'] in ('click', 'key_press', 'key_down', 'key_up')]
+        for index, e in enumerate(action_events):
+            after_sleep = 0
+            if index + 1 < len(action_events):
+                after_sleep = action_events[index + 1].get('latency', 0)
+
             if e['type'] == 'click':
                 down_time = e.get('down_time', 0.05)
-                line = f"self.click({int(e['x'])}, {int(e['y'])}"
+                line = f"self.click_relative({self.format_coord(e['x'])}, {self.format_coord(e['y'])}"
                 if e["button"] != "left":
                     line += f', key="{e["button"]}"'
                 line += f', down_time={down_time:.2f}'
-                line += f") # {e['button']} click at ({int(e['x'])}, {int(e['y'])})"
+                if after_sleep > 0.1:
+                    line += f', after_sleep={after_sleep:.2f}'
+                line += f") # {e['button']} click at ({self.format_coord(e['x'])}, {self.format_coord(e['y'])})"
                 lines.append(line)
             elif e['type'] == 'key_press':
                 down_time = e.get('down_time', 0.05)
                 line = f"self.send_key('{e['key']}'"
                 line += f", down_time={down_time:.2f}"
+                if after_sleep > 0.1:
+                    line += f", after_sleep={after_sleep:.2f}"
                 line += f") # press key '{e['key']}'"
+                lines.append(line)
+            elif e['type'] == 'key_down':
+                line = f"self.send_key_down('{e['key']}'"
+                if after_sleep > 0.1:
+                    line += f", after_sleep={after_sleep:.2f}"
+                line += f") # key down '{e['key']}'"
+                lines.append(line)
+            elif e['type'] == 'key_up':
+                line = f"self.send_key_up('{e['key']}'"
+                if after_sleep > 0.1:
+                    line += f", after_sleep={after_sleep:.2f}"
+                line += f") # key up '{e['key']}'"
                 lines.append(line)
                 
         if not lines:
-            run_code = "        pass\n"
+            run_code = "pass"
         else:
-            run_code = "\n".join("        " + line for line in lines) + "\n"
+            run_code = "\n".join(lines)
             
         if not init_lines:
             init_code = ""
         else:
-            init_code = "\n".join("        " + line for line in init_lines) + "\n"
+            init_code = "\n".join(init_lines)
             
         return init_code, run_code
 
