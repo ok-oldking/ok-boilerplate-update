@@ -328,7 +328,8 @@ class ExecutorOperation:
         if self.is_adb():
             self.executor.device_manager.adb_ensure_in_front()
         elif self.hwnd:
-            self.hwnd.bring_to_front()
+            if not self.hwnd.bring_to_front():
+                self.logger.warning("ensure_in_front: bring_to_front failed, continuing")
         else:
             self.logger.warning("ensure_in_front: not adb and no hwnd found")
 
@@ -1150,12 +1151,20 @@ class BaseTask(OCR):
         else:
             return "Not Started"
 
+    def ensure_capture(self, config=None):
+        if config is None:
+            config = self.capture_config
+        if config:
+            return self.executor.device_manager.ensure_capture(config)
+
+    def update_capture(self, config):
+        return self.executor.device_manager.update_capture(config)
+
     def enable(self):
         if not self._enabled:
             self._enabled = True
             self.info_clear()
-            if self.capture_config:
-                self.executor.device_manager.ensure_capture(self.capture_config)
+            self.ensure_capture()
             self.executor.interaction.on_run()
             logger.info(f'enabled task {self}')
         communicate.task.emit(self)
