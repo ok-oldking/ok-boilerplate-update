@@ -20,6 +20,8 @@ class MyOneTimeTask(MyBaseTask):
             "Float Config": 1.1,
             "String Config": "String Value",
             "Text Edit Config": "Text Edit Value",
+            "Folder Selector Config": "",
+            "File Selector Config": "",
             "List Config": ["List Value 1", "List Value 2"],
             "Drop Down Options Config": ["Available Drop Down Value 1"],
             "Multi Selection Config": ["Multi Selection Value 1", "Multi Selection Value 2"],
@@ -32,9 +34,12 @@ class MyOneTimeTask(MyBaseTask):
             "Drop Down Config": "Drop-down configuration with translated option values.",
             "String Config": "Single-line string configuration with a translated value.",
             "Text Edit Config": "Multi-line string configuration with a translated value.",
+            "Folder Selector Config": "Folder selector configuration that stores the selected folder path.",
+            "File Selector Config": "File selector configuration with an optional file filter.",
             "Drop Down Options Config": "Dropdown option list restricted to available translated values.",
             "Game Hotkey Config": "Open the shared global configuration example.",
             "Button Config": "Button configuration that displays all current values.",
+            "Button Options Config": "Button configuration with multiple action buttons.",
         })
         self.config_type.update({
             "Drop Down Config": {
@@ -46,6 +51,17 @@ class MyOneTimeTask(MyBaseTask):
                 },
             },
             "Text Edit Config": {"type": "text_edit"},
+            "Folder Selector Config": {
+                "type": "file_selector",
+                "selector_type": "folder",
+                "dialog_title": "Select Demo Folder",
+            },
+            "File Selector Config": {
+                "type": "file_selector",
+                "selector_type": "file",
+                "dialog_title": "Select Demo File",
+                "filter": "Python Files (*.py);;All Files (*)",
+            },
             "Drop Down Options Config": {
                 "type": "drop_down",
                 "allow_duplication": True,
@@ -68,6 +84,19 @@ class MyOneTimeTask(MyBaseTask):
                 "type": "button",
                 "text": "Button Value",
                 "callback": self.show_config_values,
+            },
+            "Button Options Config": {
+                "type": "button",
+                "buttons": [
+                    {
+                        "text": "Show Config Values",
+                        "callback": self.show_config_values,
+                    },
+                    {
+                        "text": "Show Notification",
+                        "callback": self.show_notification,
+                    },
+                ],
             },
         })
 
@@ -94,6 +123,9 @@ class MyOneTimeTask(MyBaseTask):
             self.info_set(key, self.translate_config_value(value))
         self.info_set("Game Hotkey Config", dict(self.get_global_config("Game Hotkey Config")))
 
+    def show_notification(self):
+        self.log_info("Button notification displayed.", notify=True)
+
     def translate_config_value(self, value):
         if isinstance(value, bool):
             return og.app.tr(str(value))
@@ -114,7 +146,3 @@ class MyOneTimeTask(MyBaseTask):
 
     def test_find_feature_list(self):
         return self.find_feature('this_is_a_place_holder')
-
-
-
-

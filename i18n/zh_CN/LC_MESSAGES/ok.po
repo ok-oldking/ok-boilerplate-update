@@ -108,6 +108,12 @@ msgstr "字符串配置"
 msgid "Text Edit Config"
 msgstr "多行文本配置"
 
+msgid "Folder Selector Config"
+msgstr "文件夹选择配置"
+
+msgid "File Selector Config"
+msgstr "文件选择配置"
+
 msgid "List Config"
 msgstr "列表配置"
 
@@ -132,6 +138,9 @@ msgstr "游戏快捷键配置"
 msgid "Button Config"
 msgstr "按钮配置"
 
+msgid "Button Options Config"
+msgstr "按钮选项配置"
+
 msgid "Drop-down configuration with translated option values."
 msgstr "带有已翻译选项值的下拉框配置。"
 
@@ -140,6 +149,12 @@ msgstr "带有已翻译值的单行字符串配置。"
 
 msgid "Multi-line string configuration with a translated value."
 msgstr "带有已翻译值的多行字符串配置。"
+
+msgid "Folder selector configuration that stores the selected folder path."
+msgstr "保存所选文件夹路径的文件夹选择配置。"
+
+msgid "File selector configuration with an optional file filter."
+msgstr "带有可选文件过滤器的文件选择配置。"
 
 msgid "Dropdown option list restricted to available translated values."
 msgstr "仅可从已翻译可用值中选择的下拉框选项列表。"
@@ -150,11 +165,20 @@ msgstr "打开共享的全局配置示例。"
 msgid "Button configuration that displays all current values."
 msgstr "显示全部当前配置值的按钮配置。"
 
+msgid "Button configuration with multiple action buttons."
+msgstr "带有多个操作按钮的按钮配置。"
+
 msgid "Drop Down Value 1"
 msgstr "下拉框值 1"
 
 msgid "Drop Down Value 2"
 msgstr "下拉框值 2"
+
+msgid "Select Demo Folder"
+msgstr "选择演示文件夹"
+
+msgid "Select Demo File"
+msgstr "选择演示文件"
 
 msgid "Multi Selection Value 1"
 msgstr "多选值 1"
@@ -167,6 +191,15 @@ msgstr "多选值 3"
 
 msgid "Button Value"
 msgstr "按钮值"
+
+msgid "Show Config Values"
+msgstr "显示配置值"
+
+msgid "Show Notification"
+msgstr "显示通知"
+
+msgid "Button notification displayed."
+msgstr "已显示按钮通知。"
 
 msgid "Configuration values displayed."
 msgstr "已显示配置值。"

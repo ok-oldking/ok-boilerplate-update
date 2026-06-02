@@ -83,6 +83,11 @@ class StartTab(Tab):
         self.open_log_folder_button.clicked.connect(self.open_log_folder)
         self.debug_layout.addWidget(self.open_log_folder_button)
 
+        self.log_window = None
+        self.open_logs_button = PushButton(FluentIcon.COMMAND_PROMPT, self.tr("View Log"))
+        self.open_logs_button.clicked.connect(self.open_logs)
+        self.debug_layout.addWidget(self.open_logs_button)
+
         self.ocr_button = PushButton(FluentIcon.SEARCH, "OCR")
         self.ocr_button.clicked.connect(self.ocr_log)
         self.debug_layout.addWidget(self.ocr_button)
@@ -95,10 +100,10 @@ class StartTab(Tab):
         self.overlay_layout.setContentsMargins(0, 20, 0, 20)
 
         self.overlay_switch = SwitchButton()
-        self.overlay_switch.setOnText(self.tr("Show Overlay"))
-        self.overlay_switch.setOffText(self.tr("Hide Overlay"))
+        self.overlay_switch.setOnText(self.tr("Enable Boxes"))
+        self.overlay_switch.setOffText(self.tr("Disable Boxes"))
         self.overlay_switch.setChecked(og.app.ok_config.get('use_overlay', False))
-        self.overlay_switch.checkedChanged.connect(self.on_overlay_toggled)
+        self.overlay_switch.checkedChanged.connect(self.on_overlay_boxes_toggled)
         self.overlay_layout.addWidget(self.overlay_switch)
 
         self.overlay_log_switch = SwitchButton()
@@ -134,20 +139,11 @@ class StartTab(Tab):
                     og.device_manager.set_interaction(methods[i])
             self.start_card.update_status()
 
-    def on_overlay_toggled(self, checked):
+    def on_overlay_boxes_toggled(self, checked):
         from ok import og
         og.app.ok_config['use_overlay'] = checked
         og.app.ok_config.save_file()
-        if checked:
-            if not og.app.overlay_window:
-                from ok.gui.overlay.OverlayWindow import OverlayWindow
-                og.app.overlay_window = OverlayWindow(og.device_manager.hwnd_window)
-                communicate.window.connect(og.app.overlay_window.update_overlay)
-        else:
-            if og.app.overlay_window:
-                communicate.window.disconnect(og.app.overlay_window.update_overlay)
-                og.app.overlay_window.close()
-                og.app.overlay_window = None
+        og.app.get_overlay_view().set_boxes_enabled(checked)
 
     def on_overlay_log_toggled(self, checked):
         from ok import og
@@ -177,6 +173,18 @@ class StartTab(Tab):
     @staticmethod
     def open_log_folder():
         StartTab.open_folder(Path.cwd() / "logs")
+
+    def open_logs(self):
+        from ok.gui.start.LogWindow import LogWindow
+        if self.log_window is None:
+            self.log_window = LogWindow()
+            self.log_window.destroyed.connect(self._log_window_closed)
+        self.log_window.show()
+        self.log_window.raise_()
+        self.log_window.activateWindow()
+
+    def _log_window_closed(self, _obj=None):
+        self.log_window = None
 
     @staticmethod
     def open_folder(folder):

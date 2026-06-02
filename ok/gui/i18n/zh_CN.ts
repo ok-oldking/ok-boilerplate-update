@@ -37,6 +37,14 @@
             <source>Other Projects</source>
             <translation>相关项目</translation>
         </message>
+        <message>
+            <source>Update success {from_version} -&gt; {to_version}</source>
+            <translation>更新成功 {from_version} -&gt; {to_version}</translation>
+        </message>
+        <message>
+            <source>Downgrade success {from_version} -&gt; {to_version}</source>
+            <translation>降级成功 {from_version} -&gt; {to_version}</translation>
+        </message>
     </context>
     <context>
         <name>ActWindow</name>
@@ -189,13 +197,6 @@
         </message>
     </context>
     <context>
-        <name>DownloadBar</name>
-        <message>
-            <source>Installing {progress} {percent}%</source>
-            <translation>安装中 {progress} {percent}%</translation>
-        </message>
-    </context>
-    <context>
         <name>GlobalConfigCard</name>
         <message>
             <source>Reset Config</source>
@@ -275,6 +276,50 @@
         <message>
             <source>Close</source>
             <translation>关闭</translation>
+        </message>
+        <message>
+            <source>Open Logs</source>
+            <translation>打开日志</translation>
+        </message>
+        <message>
+            <source>All Levels</source>
+            <translation>全部级别</translation>
+        </message>
+        <message>
+            <source>Filter logs...</source>
+            <translation>过滤日志...</translation>
+        </message>
+        <message>
+            <source>Clear</source>
+            <translation>清空</translation>
+        </message>
+        <message>
+            <source>Waiting for ok-script.log</source>
+            <translation>等待 ok-script.log</translation>
+        </message>
+        <message>
+            <source>records</source>
+            <translation>条</translation>
+        </message>
+        <message>
+            <source>Pause</source>
+            <translation>暂停</translation>
+        </message>
+        <message>
+            <source>Resume</source>
+            <translation>继续</translation>
+        </message>
+        <message>
+            <source>View Log</source>
+            <translation>查看日志</translation>
+        </message>
+        <message>
+            <source>Pin</source>
+            <translation>置顶</translation>
+        </message>
+        <message>
+            <source>Unpin</source>
+            <translation>取消置顶</translation>
         </message>
     </context>
     <context>
@@ -461,29 +506,6 @@
             <source>app</source>
             <comment>Error</comment>
             <translation>错误</translation>
-        </message>
-    </context>
-    <context>
-        <name>RunBar</name>
-        <message>
-            <source> Current Version: </source>
-            <translation> 当前版本:</translation>
-        </message>
-        <message>
-            <source>Launcher </source>
-            <translation>启动器</translation>
-        </message>
-        <message>
-            <source>Choose Profile:</source>
-            <translation>选择版本:</translation>
-        </message>
-        <message>
-            <source>Start</source>
-            <translation>启动</translation>
-        </message>
-        <message>
-            <source>Download Dependencies and Start</source>
-            <translation>下载依赖并启动</translation>
         </message>
     </context>
     <context>
@@ -757,8 +779,8 @@
             <translation>无法启动游戏, 请确认游戏已安装!</translation>
         </message>
         <message>
-            <source>NVIDIA/AMD filters or sharpening are enabled and may cause malfunctions!</source>
-            <translation>NVIDIA/AMD 滤镜或锐化已启用，可能导致功能异常！</translation>
+            <source>{vendor} {feature} is enabled and may cause malfunctions!</source>
+            <translation>{vendor} {feature} 已启用，可能导致功能异常！</translation>
         </message>
         <message>
             <source>GPU Driver Warning</source>
@@ -819,12 +841,12 @@
             <translation>选择交互方式</translation>
         </message>
         <message>
-            <source>Show Overlay</source>
-            <translation>显示调试悬浮窗</translation>
+            <source>Enable Boxes</source>
+            <translation>启用标记框</translation>
         </message>
         <message>
-            <source>Hide Overlay</source>
-            <translation>隐藏调试悬浮窗</translation>
+            <source>Disable Boxes</source>
+            <translation>禁用标记框</translation>
         </message>
         <message>
             <source>Show Log on Overlay</source>
@@ -861,6 +883,14 @@
         <message>
             <source>Log Folder</source>
             <translation>日志目录</translation>
+        </message>
+        <message>
+            <source>Open Logs</source>
+            <translation>打开日志</translation>
+        </message>
+        <message>
+            <source>View Log</source>
+            <translation>查看日志</translation>
         </message>
     </context>
     <context>
@@ -985,57 +1015,6 @@
         <message>
             <source>Time Elapsed</source>
             <translation>已运行</translation>
-        </message>
-    </context>
-    <context>
-        <name>UpdateBar</name>
-        <message>
-            <source>Current Version: </source>
-            <translation>当前版本</translation>
-        </message>
-        <message>
-            <source>Checking for Updates...</source>
-            <translation>检查更新中...</translation>
-        </message>
-        <message>
-            <source>Delete Downloaded Dependencies</source>
-            <translation>删除已下载依赖</translation>
-        </message>
-        <message>
-            <source>Update Source:</source>
-            <translation>更新源:</translation>
-        </message>
-        <message>
-            <source>Check for Update</source>
-            <translation>检查更新</translation>
-        </message>
-        <message>
-            <source>Current Version:</source>
-            <translation>当前版本</translation>
-        </message>
-        <message>
-            <source>TargetVersion:</source>
-            <translation>目标版本</translation>
-        </message>
-        <message>
-            <source>Update</source>
-            <translation>更新版本</translation>
-        </message>
-        <message>
-            <source>This is the newest version</source>
-            <translation>已经是最新版本</translation>
-        </message>
-        <message>
-            <source>Checking for Update...</source>
-            <translation>检查更新中</translation>
-        </message>
-        <message>
-            <source>Updating</source>
-            <translation>更新中</translation>
-        </message>
-        <message>
-            <source>Downgrade</source>
-            <translation>降级版本</translation>
         </message>
     </context>
     <context>
@@ -1166,6 +1145,30 @@
         <message>
             <source>Basic Options</source>
             <translation>基本设置</translation>
+        </message>
+        <message>
+            <source>Enable Blur</source>
+            <translation>启用模糊遮挡</translation>
+        </message>
+        <message>
+            <source>Blur Game UID etc to enhance OLED life</source>
+            <translation>模糊游戏 UID 等固定内容以延长 OLED 屏幕寿命</translation>
+        </message>
+        <message>
+            <source>Blur Algorithm</source>
+            <translation>遮挡算法</translation>
+        </message>
+        <message>
+            <source>Method used to obscure configured areas</source>
+            <translation>用于遮挡配置区域的处理方式</translation>
+        </message>
+        <message>
+            <source>Blur</source>
+            <translation>模糊</translation>
+        </message>
+        <message>
+            <source>Inpaint</source>
+            <translation>内容填充</translation>
         </message>
         <message>
             <source>Use DirectML</source>
@@ -1370,6 +1373,14 @@
         <message>
             <source>Target window inactive: Recording paused</source>
             <translation>目标窗口非激活：暂停录制</translation>
+        </message>
+        <message>
+            <source>Blur Interval</source>
+            <translation>遮挡检查间隔</translation>
+        </message>
+        <message>
+            <source>Seconds between processed overlay updates</source>
+            <translation>处理后遮挡层的更新间隔（秒）</translation>
         </message>
     </context>
     <context>
@@ -2603,6 +2614,36 @@
         <message>
             <source>NPU inferring Error, you might need to update the Intel NPU driver!</source>
             <translation>NPU推理错误，您可能需要更新Intel NPU驱动！</translation>
+        </message>
+    </context>
+    <context>
+        <name>GlobalConfigTab</name>
+        <message>
+            <source>Reset Config</source>
+            <translation>重置配置</translation>
+        </message>
+    </context>
+    <context>
+        <name>LabelAndFileSelector</name>
+        <message>
+            <source>Browse</source>
+            <translation>浏览</translation>
+        </message>
+        <message>
+            <source>Select File</source>
+            <translation>选择文件</translation>
+        </message>
+        <message>
+            <source>Select Folder</source>
+            <translation>选择文件夹</translation>
+        </message>
+        <message>
+            <source>All Files (*)</source>
+            <translation>所有文件 (*)</translation>
+        </message>
+        <message>
+            <source>Select File or Folder</source>
+            <translation>选择文件或文件夹</translation>
         </message>
     </context>
 </TS>

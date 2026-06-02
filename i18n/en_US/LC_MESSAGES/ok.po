@@ -108,6 +108,12 @@ msgstr ""
 msgid "Text Edit Config"
 msgstr ""
 
+msgid "Folder Selector Config"
+msgstr ""
+
+msgid "File Selector Config"
+msgstr ""
+
 msgid "List Config"
 msgstr ""
 
@@ -132,6 +138,9 @@ msgstr ""
 msgid "Button Config"
 msgstr ""
 
+msgid "Button Options Config"
+msgstr ""
+
 msgid "Drop-down configuration with translated option values."
 msgstr ""
 
@@ -139,6 +148,12 @@ msgid "Single-line string configuration with a translated value."
 msgstr ""
 
 msgid "Multi-line string configuration with a translated value."
+msgstr ""
+
+msgid "Folder selector configuration that stores the selected folder path."
+msgstr ""
+
+msgid "File selector configuration with an optional file filter."
 msgstr ""
 
 msgid "Dropdown option list restricted to available translated values."
@@ -150,10 +165,19 @@ msgstr ""
 msgid "Button configuration that displays all current values."
 msgstr ""
 
+msgid "Button configuration with multiple action buttons."
+msgstr ""
+
 msgid "Drop Down Value 1"
 msgstr ""
 
 msgid "Drop Down Value 2"
+msgstr ""
+
+msgid "Select Demo Folder"
+msgstr ""
+
+msgid "Select Demo File"
 msgstr ""
 
 msgid "Multi Selection Value 1"
@@ -166,6 +190,15 @@ msgid "Multi Selection Value 3"
 msgstr ""
 
 msgid "Button Value"
+msgstr ""
+
+msgid "Show Config Values"
+msgstr ""
+
+msgid "Show Notification"
+msgstr ""
+
+msgid "Button notification displayed."
 msgstr ""
 
 msgid "Configuration values displayed."
