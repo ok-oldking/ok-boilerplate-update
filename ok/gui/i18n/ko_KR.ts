@@ -468,6 +468,10 @@
             <source>Click an option to add it.</source>
             <translation>추가할 옵션을 클릭하세요.</translation>
         </message>
+        <message>
+            <source>Search options...</source>
+            <translation>옵션 검색...</translation>
+        </message>
     </context>
     <context>
         <name>ModifyListItem</name>
@@ -1354,7 +1358,7 @@
             <translation>베타 버전</translation>
         </message>
         <message>
-            <source>Kill Launcher after Start</source>
+            <source>Kill Launcher After Start</source>
             <translation>시작 후 런처 종료</translation>
         </message>
         <message>
@@ -1384,6 +1388,54 @@
         <message>
             <source>Seconds between processed overlay updates</source>
             <translation>처리된 오버레이 업데이트 간격(초)</translation>
+        </message>
+        <message>
+            <source>App Launcher</source>
+            <translation>앱 실행기</translation>
+        </message>
+        <message>
+            <source>Configure the app launcher</source>
+            <translation>앱 실행기 구성</translation>
+        </message>
+        <message>
+            <source>Start Launcher at Login</source>
+            <translation>로그인 시 실행기 시작</translation>
+        </message>
+        <message>
+            <source>Start the launcher automatically when you sign in</source>
+            <translation>로그인할 때 앱 실행기를 자동으로 시작합니다</translation>
+        </message>
+        <message>
+            <source>Launcher Updates</source>
+            <translation>실행기 업데이트</translation>
+        </message>
+        <message>
+            <source>Choose how the launcher installs updates</source>
+            <translation>실행기의 업데이트 설치 방식을 선택합니다</translation>
+        </message>
+        <message>
+            <source>Manual Update</source>
+            <translation>수동 업데이트</translation>
+        </message>
+        <message>
+            <source>Automatic Update</source>
+            <translation>자동 업데이트</translation>
+        </message>
+        <message>
+            <source>Automatic Update (Pre-release)</source>
+            <translation>자동 업데이트(사전 출시)</translation>
+        </message>
+        <message>
+            <source>Launcher</source>
+            <translation>실행기</translation>
+        </message>
+        <message>
+            <source>Open Launcher</source>
+            <translation>실행기 열기</translation>
+        </message>
+        <message>
+            <source>Open the app launcher to manage updates</source>
+            <translation>앱 실행기를 열어 업데이트를 관리합니다</translation>
         </message>
     </context>
     <context>

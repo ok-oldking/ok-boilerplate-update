@@ -467,6 +467,10 @@
             <source>Click an option to add it.</source>
             <translation>點擊選項以新增。</translation>
         </message>
+        <message>
+            <source>Search options...</source>
+            <translation>搜尋選項...</translation>
+        </message>
     </context>
     <context>
         <name>ModifyListItem</name>
@@ -1357,7 +1361,7 @@
             <translation>快捷鍵</translation>
         </message>
         <message>
-            <source>Kill Launcher after Start</source>
+            <source>Kill Launcher After Start</source>
             <translation>啟動後關閉啟動器</translation>
         </message>
         <message>
@@ -1379,6 +1383,54 @@
         <message>
             <source>Seconds between processed overlay updates</source>
             <translation>處理後遮擋層的更新間隔（秒）</translation>
+        </message>
+        <message>
+            <source>App Launcher</source>
+            <translation>應用程式啟動器</translation>
+        </message>
+        <message>
+            <source>Configure the app launcher</source>
+            <translation>設定應用程式啟動器</translation>
+        </message>
+        <message>
+            <source>Start Launcher at Login</source>
+            <translation>登入時啟動啟動器</translation>
+        </message>
+        <message>
+            <source>Start the launcher automatically when you sign in</source>
+            <translation>登入時自動啟動應用程式啟動器</translation>
+        </message>
+        <message>
+            <source>Launcher Updates</source>
+            <translation>啟動器更新</translation>
+        </message>
+        <message>
+            <source>Choose how the launcher installs updates</source>
+            <translation>選擇啟動器安裝更新的方式</translation>
+        </message>
+        <message>
+            <source>Manual Update</source>
+            <translation>手動更新</translation>
+        </message>
+        <message>
+            <source>Automatic Update</source>
+            <translation>自動更新</translation>
+        </message>
+        <message>
+            <source>Automatic Update (Pre-release)</source>
+            <translation>自動更新（預發行版）</translation>
+        </message>
+        <message>
+            <source>Launcher</source>
+            <translation>啟動器</translation>
+        </message>
+        <message>
+            <source>Open Launcher</source>
+            <translation>開啟啟動器</translation>
+        </message>
+        <message>
+            <source>Open the app launcher to manage updates</source>
+            <translation>開啟應用程式啟動器以管理更新</translation>
         </message>
     </context>
     <context>
