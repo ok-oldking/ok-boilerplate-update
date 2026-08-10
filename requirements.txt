@@ -52,19 +52,13 @@ pydirectinput==1.0.4
     # via ok-script
 pynput==1.8.2
     # via -r requirements.in
-pyside6==6.11.1
-    # via pyside6-fluent-widgets
-pyside6-addons==6.11.1
-    # via pyside6
 pyside6-essentials==6.11.1
-    # via
-    #   pyside6
-    #   pyside6-addons
-pyside6-fluent-widgets==1.11.2
+    # via -r requirements.in
+pyside6-fluent-widgets==1.11.3
     # via
     #   -r requirements.in
     #   ok-script
-pysidesix-frameless-window==0.8.1
+pysidesix-frameless-window==0.8.2
     # via pyside6-fluent-widgets
 pywin32==312
     # via
@@ -79,10 +73,7 @@ retry2==0.9.5
 shapely==2.1.2
     # via onnxocr-ppocrv5
 shiboken6==6.11.1
-    # via
-    #   pyside6
-    #   pyside6-addons
-    #   pyside6-essentials
+    # via pyside6-essentials
 six==1.17.0
     # via pynput
 typing-extensions==4.16.0

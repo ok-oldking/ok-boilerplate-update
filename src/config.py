@@ -3,7 +3,7 @@ import os
 import numpy as np
 from ok import ConfigOption
 
-version = "v1.0.29"
+version = "v1.0.30"
 #不需要修改version, Github Action打包会自动修改
 
 key_config_option = ConfigOption('Game Hotkey Config', { #全局配置示例
@@ -75,10 +75,15 @@ config = {
         'force_no_hdr': False, #True=当用户开启AutoHDR时候禁止使用
         'require_bg': True # 要求使用后台截图
     },
-    'adb': {  # Windows游戏请填写此设置, mumu模拟器使用原生截图和input,速度极快. 其他模拟器和真机使用adb,截图速度较慢
+    'adb': {  # 模拟器或Android设备请填写此设置, mumu模拟器使用原生截图和input,速度极快. 其他模拟器和真机使用adb,截图速度较慢
         # optional, if set, will start the pacakge and ensure installed
         #'packages': ['com.abc.efg1', 'com.abc.efg1']
     },
+    # 'browser': {  # 浏览器游戏请填写此设置；windows、adb、browser 至少配置一个，也可以同时配置多个
+    #     'url': 'https://example.com/game',
+    #     'nick': 'Browser',
+    #     'resolution': (1280, 720),
+    # },
     'start_timeout': 120,  # default 60
     'window_size': { #ok-script窗口大小
         'width': 1200,
