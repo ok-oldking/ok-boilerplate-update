@@ -3,8 +3,21 @@ import os
 import numpy as np
 from ok import ConfigOption
 
-version = "v1.0.33"
+version = "v1.0.34"
 #不需要修改version, Github Action打包会自动修改
+
+app_profile = os.environ.get("PYAPPIFY_APP_PROFILE", "")
+gui_config = {
+    'type': 'web' if app_profile.casefold() == 'web' else 'qt',
+    'window_size': {
+        'width': 1200,
+        'height': 800,
+        'min_width': 600,
+        'min_height': 450,
+    },
+}
+if gui_config['type'] == 'web':
+    gui_config['launch_mode'] = 'pywebview'
 
 key_config_option = ConfigOption('Game Hotkey Config', { #全局配置示例
     'Echo Key': 'q',
@@ -50,7 +63,7 @@ def make_bottom_right_black(frame): #可选. 某些游戏截图时遮挡UID使�
 config = {
     'custom_tasks':True, # enable creating and editing custom tasks
     'debug': False,  # Optional, default: False
-    'use_gui': True, # 目前只支持True
+    'gui': gui_config,
     'config_folder': 'configs', #最好不要修改
     'global_configs': [key_config_option],
     'screenshot_processor': make_bottom_right_black, # 在截图的时候对frame进行修改, 可选
@@ -85,12 +98,6 @@ config = {
     #     'resolution': (1280, 720),
     # },
     'start_timeout': 120,  # default 60
-    'window_size': { #ok-script窗口大小
-        'width': 1200,
-        'height': 800,
-        'min_width': 600,
-        'min_height': 450,
-    },
     'supported_resolution': {
         'ratio': '16:9', #支持的游戏分辨率
         'min_size': (1280, 720), #支持的最低游戏分辨率

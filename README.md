@@ -23,17 +23,24 @@ ok-script-app 是一个基于 [ok-script](https://github.com/ok-oldking/ok-scrip
 ```powershell
 py -3.12 -m venv .venv
 .\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-python -m pip install --no-deps -r requirements.txt --upgrade
+$PypiIndex = "https://pypi.org/simple/"
+python -m pip install --index-url $PypiIndex --upgrade pip
+python -m pip install --index-url $PypiIndex --no-deps --upgrade -r requirements.txt
 python main_debug.py
 ```
+
+直接依赖统一维护在 `pyproject.toml`。`requirements.txt` 是 Qt profile 的锁定
+文件，`requirements-web.txt` 是 Web profile 的锁定文件；请勿直接编辑这些
+生成文件。Web profile 请将上面的依赖和启动命令分别替换为
+`requirements-web.txt` 和 `python web_main_debug.py`。官方 PyPI 的 pip 索引地址
+必须包含 `/simple/`；`https://pypi.org/` 不是有效的包索引地址。
 
 详细的仓库初始化、目标配置、首个任务和 tag 打包流程请阅读[快速开始](docs/getting-started.md)。
 
 ## 构建文档网站
 
 ```powershell
-python -m pip install -r requirements-docs.txt
+python -m pip install --index-url https://pypi.org/simple/ -r requirements-docs.txt
 python -m mkdocs serve
 ```
 
