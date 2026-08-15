@@ -3,7 +3,7 @@ import os
 import numpy as np
 from ok import ConfigOption
 
-version = "v1.0.34"
+version = "v1.0.35-beta.1"
 #不需要修改version, Github Action打包会自动修改
 
 app_profile = os.environ.get("PYAPPIFY_APP_PROFILE", "")
